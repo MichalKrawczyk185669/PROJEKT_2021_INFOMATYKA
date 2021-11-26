@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{86727328-057a-4d48-97d2-bb2fac4f2dd8}</ProjectGuid>
-    <RootNamespace>INFORMATYKA2021PROJEKT</RootNamespace>
+    <ProjectGuid>{42808d7f-5296-48f7-9db3-63248f5fc88c}</ProjectGuid>
+    <RootNamespace>Gra</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -139,7 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="INFORMATYKA_2021_PROJEKT.cpp" />
+    <ClCompile Include="Gra.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
