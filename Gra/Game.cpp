@@ -2,9 +2,14 @@
 //Funkcje prywatne
 void Game::initWindow()
 {
-	this->window = new sf::RenderWindow(sf::VideoMode(800, 600),"Smok wawelski i owce", sf::Style::Close || sf::Style::Titlebar);
+	this->window = new sf::RenderWindow(sf::VideoMode(800, 600),"Smok wawelski i owce", sf::Style::Close);
 	this->window->setFramerateLimit(144);
 	this->window->setVerticalSyncEnabled(false);
+}
+void Game::initTextures()
+{
+	this->textures["KulaOgnia"] = new sf::Texture();
+	this->textures["KulaOgnia"]->loadFromFile("tekstury/KulaOgnia.png");
 }
 void Game::initPlayer()
 {
@@ -15,6 +20,7 @@ Game::Game()
 {
 
 	this->initWindow();
+	this->initTextures();
 	this->initPlayer();
 }
 
@@ -22,6 +28,16 @@ Game::~Game()
 {
 	delete this->window;
 	delete this->player;
+	//usuwanie tekstur
+	for (auto& i : this->textures)
+	{
+		delete i.second;
+	}
+	//kule ognia usuwanie
+	for (auto* i : this->kulaognia)
+	{
+		delete i;
+	}
 }
 // Funkcje
 void Game::run()
@@ -43,9 +59,6 @@ void Game::updatePollEvents()
 	{
 		if (event.Event::type == sf::Event::Closed)
 			this->window->close();
-		/*if (event.Event::KeyPressed && event.Event::key.code == sf::Keyboard::Escape)
-			this->window->close();*/
-
 	}
 }
 
@@ -60,25 +73,45 @@ void Game::updateInput()
 		this->player->move(0.f, -1.f);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
 		this->player->move(0.f, 1.f);
+
+	// kule ognia strzaly
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->player->canAttack())
+	{
+		
+		this->kulaognia.push_back(new KulaOgnia(this->textures["KulaOgnia"], this->player->getPos().x+90, this->player->getPos().y+36.5, 1.f, 0.f, 5.f));
+	}
+
+}
+
+void Game::updateKulaOgnia()
+{
+	unsigned counter = 0;
+	for (auto *bullet : this->kulaognia)
+	{
+		bullet->update();
+		if (bullet->getBounds().top + bullet->getBounds().height < 0.f)
+		{
+			delete bullet;
+			this->kulaognia.erase(this -> kulaognia.begin() + counter);
+			--counter;
+			
+
+		}
+		++counter;
+	}
 }
 
 void Game::update()
 {
-	//while (window->isOpen())
-	//{
-	//	sf::Event event;
-	//	while (window->pollEvent(event))
-	//	{
-	//		// jezeli zdarzenie zamknij - zamykamy okno
-	//		if (event.type == sf::Event::Closed)
-	//			this->window->close();
-	//	}
-	//}
 	this->updatePollEvents();
+
+	
+
 	this->updateInput();
+	
+	this->player->update();
 
-
-		
+	this->updateKulaOgnia();
 
 }
 
@@ -87,5 +120,9 @@ void Game::render()
 	this->window->clear();
 
 	this->player->render(*this->window);
+	for (auto* bullet : this->kulaognia)
+	{
+		bullet->render(this->window);
+	}
 	this->window->display();
 }

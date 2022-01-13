@@ -1,5 +1,12 @@
 #include "Player.h"
 
+void Player::initVariables()
+{
+	this->szybkoscporuszania = 2.f;
+	this->attackCooldownMax = 10.f;
+	this->attackCooldown = this->attackCooldownMax;
+}
+
 void Player::initTexture()
 {
 	// za³adowanie tekstury z pliku
@@ -22,8 +29,8 @@ void Player::initSprite()
 
 Player::Player()
 {
-	this->szybkoscporuszania = 2.f;
-
+	/*this->szybkoscporuszania = 2.f;*/
+	this->initVariables();
 	this->initTexture();
 	this->initSprite();
 
@@ -34,15 +41,38 @@ Player::~Player()
 
 }
 
+const::sf::Vector2f& Player::getPos() const
+{
+	return this->sprite.getPosition();
+}
+
 void Player::move(const float dirX, const float dirY)
 {
 	this->sprite.move(this->szybkoscporuszania * dirX, this->szybkoscporuszania * dirY);
 }
 
+const bool Player::canAttack()
+{
+	if (this->attackCooldown >= this->attackCooldownMax)
+	{
+		this->attackCooldown = 2.f;
+		return true;
+	}
+
+	return false;
+}
+
+void Player::updateAttack()
+{
+	if(this->attackCooldown< this->attackCooldownMax)
+	  this->attackCooldown += 0.5f;
+
+}
+
 //funkcje
 void Player::update()
 {
-
+	this->updateAttack();
 }
 
 void Player::render(sf::RenderTarget& target)
