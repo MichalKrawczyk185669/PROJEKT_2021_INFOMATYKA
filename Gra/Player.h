@@ -10,6 +10,9 @@ private:
 
 	float szybkoscporuszania;
 
+	bool facingLeft;
+	bool facingRight;
+
 	float attackCooldown;
 	float attackCooldownMax;
 	// Funkcje prywatne
@@ -20,9 +23,14 @@ public:
 	Player();
 	virtual ~Player();
 
-	const::sf::Vector2f& getPos() const;
-
+	const sf::Vector2f& getPos() const;
+	const sf::FloatRect getBounds() const;
 	//funkcje
+
+	void faceLeft();
+	void faceRight();
+
+	sf::Vector2f* getMouthPos() const;
 
 	void move(const float dirX, const float dirY);
 	const bool canAttack();
@@ -30,5 +38,6 @@ public:
 	void update();
 	void render(sf::RenderTarget& target);
 
+	bool isRightFacing();
 };
 
