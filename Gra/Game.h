@@ -14,6 +14,8 @@ class Game
 		std::vector<KulaOgnia*> kulaognia;
 		std::vector<KulaOgnia*> to_delete;
 
+		std::map<std::string, sf::Texture*> enemyTextures;
+
 		UI* ui;
 
 		//Tlo	
@@ -22,6 +24,8 @@ class Game
 		//Gracz
 		Player* player;
 
+		bool isPaused = false;
+		bool canChangePause = true;
 
 		//Przeciwnicy
 		float spawnTimer;

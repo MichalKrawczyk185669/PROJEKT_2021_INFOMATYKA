@@ -2,11 +2,29 @@
 #include<iostream>
 #include<SFML/Graphics.hpp>
 #include<SFML/System.hpp>
+
+#include "Animation.h"
+
 class Player
 {
 private:
 	sf::Sprite sprite;
+
+	sf::Sprite spriteBody;
+	sf::Sprite spriteHead;
+
+	Animation* playerAnimation;
+	const int animationFrames = 4;
+
 	sf::Texture texture;
+	sf::Texture bodyTexture;
+	sf::Texture headTexture;
+
+	sf::Texture animatedBodyTexture;
+	sf::IntRect animatedBodyRect;
+
+	sf::Clock clock;
+
 
 	float szybkoscporuszania;
 
@@ -19,12 +37,16 @@ private:
 	void initVariables();
 	void initTexture();
 	void initSprite();
+	void initAnimation();
 public:
 	Player();
 	virtual ~Player();
 
 	const sf::Vector2f& getPos() const;
 	const sf::FloatRect getBounds() const;
+	const sf::FloatRect getBodyBounds() const;
+	const sf::FloatRect getHeadBounds() const;
+
 	//funkcje
 
 	void faceLeft();
@@ -39,5 +61,7 @@ public:
 	void render(sf::RenderTarget& target);
 
 	bool isRightFacing();
+
+	sf::Uint64 getMiddlePos();
 };
 

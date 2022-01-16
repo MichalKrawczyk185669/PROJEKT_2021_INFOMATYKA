@@ -14,6 +14,15 @@ void Game::initTextures()
 	this->textures["FlippedKulaOgnia"]->loadFromFile("tekstury/FlippedKulaOgnia.png");
 	this->textures["Background"] = new sf::Texture();
 	this->textures["Background"]->loadFromFile("tekstury/background.jpg");
+
+	this->enemyTextures["enemy1"] = new sf::Texture();
+	this->enemyTextures["enemy1"]->loadFromFile("tekstury/owce/1.png");
+	this->enemyTextures["enemy2"] = new sf::Texture();
+	this->enemyTextures["enemy2"]->loadFromFile("tekstury/owce/2.png");
+	this->enemyTextures["enemy3"] = new sf::Texture();
+	this->enemyTextures["enemy3"]->loadFromFile("tekstury/owce/3.png");
+	this->enemyTextures["enemy4"] = new sf::Texture();
+	this->enemyTextures["enemy4"]->loadFromFile("tekstury/owce/4.png");
 }
 void Game::initPlayer()
 {
@@ -87,37 +96,60 @@ void Game::updatePollEvents()
 
 void Game::updateInput()
 {
-	// poruszanie smoka
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-		this->player->move(-1.f, 0.f);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-		this->player->move(1.f, 0.f);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
-		this->player->move(0.f, -1.f);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-		this->player->move(0.f, 1.f);
+	if (!isPaused) {
+		// poruszanie smoka
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) && std::min(player->getBodyBounds().left, player->getHeadBounds().left) >= 0) { ///TODO nie dziala 
+			this->player->move(-1.f, 0.f);
+		}
+			
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) && std::max(player->getHeadBounds().left + player->getHeadBounds().width, player->getBodyBounds().left + player->getBodyBounds().width) <= window->getSize().x) {
+			this->player->move(1.f, 0.f);
+		}
+			
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && player->getBodyBounds().top >= ui->getBackgroundHeight()) {
+			this->player->move(0.f, -1.f);
+		}
+			
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && (player->getBodyBounds().top + player->getBodyBounds().height) <= window->getSize().y) {
+			this->player->move(0.f, 1.f);
+		}
+			
 
-	// kule ognia strzaly
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->player->canAttack())
-	{
-		sf::Vector2f *mouthPos = this->player->getMouthPos();
-		if (this->player->isRightFacing()) { // shoot right
-			this->kulaognia.push_back(new KulaOgnia(this->textures["KulaOgnia"], mouthPos->x, mouthPos->y, 1.f, 0.f, 5.f));
+		// kule ognia strzaly
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->player->canAttack())
+		{
+			sf::Vector2f* mouthPos = this->player->getMouthPos();
+			if (this->player->isRightFacing()) { // shoot right
+				this->kulaognia.push_back(new KulaOgnia(this->textures["KulaOgnia"], mouthPos->x, mouthPos->y, 1.f, 0.f, 5.f));
+			}
+			else { //shoot left
+				this->kulaognia.push_back(new KulaOgnia(this->textures["FlippedKulaOgnia"], mouthPos->x, mouthPos->y, -1.f, 0.f, 5.f));
+			}
+
 		}
-		else { //shoot left
-			this->kulaognia.push_back(new KulaOgnia(this->textures["FlippedKulaOgnia"], mouthPos->x, mouthPos->y, -1.f, 0.f, 5.f));
+
+		// mouse position left or right
+		if (sf::Mouse::getPosition(*window).x >= player->getMiddlePos()) {
+			// mouse is on the right side of the player
+			player->faceRight();
 		}
-		
+		else {
+			// mouse is on the left side of the player
+			player->faceLeft();
+		}
 	}
+	
 
-	// mouse position left or right
-	if (sf::Mouse::getPosition(*window).x >= this->player->getPos().x) {
-		// mouse is on the right side of the player
-		player->faceRight();
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+		if (canChangePause) {
+			isPaused = !isPaused;
+			ui->togglePauseScreen();
+			std::cout << isPaused;
+			canChangePause = false;
+		}
 	}
 	else {
-		// mouse is on the left side of the player
-		player->faceLeft();
+		canChangePause = true;
 	}
 }
 
@@ -130,11 +162,9 @@ void Game::updateKulaOgnia()
 		bullet->update();
 		if (!bullet->getBounds().intersects(windowBounds) ) // check if bullets go off screen
 		{
-			std::cout << kulaognia.size() << '\n';
 			this->kulaognia.erase(this -> kulaognia.begin() + counter);
 			delete bullet;
 			--counter;
-			std::cout << kulaognia.size() << '\n';
 			break;
 		}
 
@@ -167,8 +197,17 @@ void Game::updateEnemies()
 	this->spawnTimer += 0.5f;
 	if (this->spawnTimer >= this->spawntimerMax)
 	{
-		this->enemies.push_back(new Przeciwnicy(rand() % this->window->getSize().y+20.f, 0.f));
-		this->spawnTimer = 0.f;
+		sf::Texture* enemyTexture = new sf::Texture(*enemyTextures["enemy1"]);
+		int r = rand() % 4;
+		if (r == 0) enemyTexture = enemyTextures["enemy1"];
+		if (r == 1) enemyTexture = enemyTextures["enemy2"];
+		if (r == 2) enemyTexture = enemyTextures["enemy3"];
+		if (r == 3) enemyTexture = enemyTextures["enemy4"];
+		if (enemyTexture) {
+			this->enemies.push_back(new Przeciwnicy(enemyTexture, rand() % this->window->getSize().y + 20.f, 20.f));
+			this->spawnTimer = 0.f;
+		}
+		
 	}
 	for (int i = 0; i < this->enemies.size(); ++i)
 	{
@@ -179,24 +218,44 @@ void Game::updateEnemies()
 		{
 			this->enemies.erase(this->enemies.begin() + i);
 			delete enemy;
+			break;
+		}
+
+		if (enemy->getBounds().intersects(player->getHeadBounds())) {
+			this->enemies.erase(this->enemies.begin() + i);
+			delete enemy;
+			if (ui->getLives() > 0) {
+				this->ui->setLives(ui->getLives() - 1);
+			}
+			break;
+		}
+		if (enemy->getBounds().intersects(player->getBodyBounds())) {
+			this->enemies.erase(this->enemies.begin() + i);
+			delete enemy;
+			break;
 		}
 	}
 }
 
 void Game::update()
 {
+	if (!isPaused) {
+		
+
+		this->updatePollEvents();
+
+		
+
+		this->player->update();
+
+		this->updateKulaOgnia();
+
+		this->updateEnemies();
+	}
+
 	this->ui->update();
 
-	this->updatePollEvents();
-
 	this->updateInput();
-	
-	this->player->update();
-
-	this->updateKulaOgnia();
-
-	this->updateEnemies();
-
 }
 
 void Game::render()
@@ -222,7 +281,7 @@ void Game::render()
 
 	
 
-	this->ui->render(this->window);
+	this->ui->render(this->window, this->window);
 
 	this->window->display();
 }

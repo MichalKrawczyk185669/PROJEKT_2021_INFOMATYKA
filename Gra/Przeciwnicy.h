@@ -7,6 +7,14 @@ class Przeciwnicy
 {
 private:
 	sf::CircleShape shape;
+
+	sf::Sprite* sprite;
+	sf::Texture texture1;
+	sf::Texture texture2;
+	sf::Texture texture3;
+	sf::Texture texture4;
+	sf::IntRect textureRect;
+
 	int type;
 	int hp;
 	int hpMax;
@@ -21,7 +29,7 @@ private:
 	
 
 public:
-	Przeciwnicy(float pos_x, float pos_y);
+	Przeciwnicy(sf::Texture* texture, float pos_x, float pos_y);
 
 	const sf::FloatRect getBounds() const;
 	virtual ~Przeciwnicy();
