@@ -39,14 +39,22 @@ const sf::FloatRect KulaOgnia::getBounds() const
 	return this->shape.getGlobalBounds();
 }
 
+
 void KulaOgnia::update()
 {
 	//poruszanie ogniem
 	this->shape.move(this->szybkoscpocisku * this->direction);
-
 }
 
 void KulaOgnia::render(sf::RenderTarget* target)
 {
-	target->draw(this->shape);
+	try
+	{
+		target->draw(this->shape);
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << e.what();
+	}
+	
 }

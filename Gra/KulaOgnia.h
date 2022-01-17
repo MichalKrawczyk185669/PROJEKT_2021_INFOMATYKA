@@ -4,7 +4,6 @@
 #include<SFML/System.hpp>
 
 
-
 class KulaOgnia
 {
    private:
@@ -23,7 +22,6 @@ class KulaOgnia
 		virtual ~KulaOgnia();
         //kula
 		const sf::FloatRect getBounds() const;
-
 
 		void update();
 		void render(sf::RenderTarget* target);
