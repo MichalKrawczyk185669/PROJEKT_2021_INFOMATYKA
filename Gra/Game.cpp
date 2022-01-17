@@ -334,8 +334,10 @@ void Game::update()
 
 	if (ui->getStartGameCall()) {
 		enemies.clear();
-		ui->setLives(4);
-		ui->setScore(0);
+		if (ui->getDeathScreenShow()) {
+			ui->setLives(4);
+			ui->setScore(0);
+		}
 		ui->setStartGameCall(false);
 		ui->setDeathScreenShow(false);
 		if (isPaused) {

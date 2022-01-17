@@ -291,7 +291,7 @@ void UI::render(sf::RenderTarget* target, sf::RenderWindow* window)
 
 			if (deathBack->handleClicks(window) && !showingExitScreen && !showingHelpScreen) {
 				this->startGameCall = true;
-				this->showingDeathScreen = false;
+				//this->showingDeathScreen = false;
 			}
 			if (deathExit->handleClicks(window) && !showingExitScreen && !showingHelpScreen) {
 				this->showingExitScreen = true;
@@ -501,4 +501,9 @@ bool UI::getMainMenuShown() const
 void UI::setDeathScreenShow(bool setDeath)
 {
 	this->showingDeathScreen = setDeath;
+}
+
+bool UI::getDeathScreenShow() const
+{
+	return showingDeathScreen;
 }

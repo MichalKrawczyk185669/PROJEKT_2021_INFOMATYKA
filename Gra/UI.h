@@ -129,6 +129,7 @@ public:
 	bool getMainMenuShown() const;
 
 	void setDeathScreenShow(bool setDeath);
-	
+	bool getDeathScreenShow() const;
+
 };
 
